@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+
+# Coverage directory used by jest
+coverage
+
+# Visual studio code settings
+.vscode
+
+# Project logging files
+*.log
+
+# Config files
+utils/db/firestore-setup.json
+
+# Scraper IOs
+input.json
+output.json
