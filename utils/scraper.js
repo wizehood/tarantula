@@ -43,7 +43,7 @@ class Scraper {
 
     async run() {
         console.log(`Firing IP test...`);
-        await this.getIp();
+        await this.checkIp();
 
         await this.monitor.setStartTime();
         console.log(`Current time: ${this.monitor.currentTimeFormatted}`);
@@ -191,7 +191,7 @@ class Scraper {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async getIp() {
+    async checkIp() {
         return await axios.get('https://api.ipify.org/?format=json')
             .then((response) => {
                 console.log("Public IP: " + response.data.ip)
