@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-class MongoDb {
+class Mongo {
     constructor() {
         this.db = null;
     }
@@ -21,4 +21,4 @@ class MongoDb {
     }
 }
 
-module.exports = MongoDb;
+module.exports = Mongo;

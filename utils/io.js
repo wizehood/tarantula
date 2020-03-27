@@ -1,4 +1,4 @@
-const { MongoDb, Firestore } = require('./db');
+const { Mongo, Firestore } = require('./db');
 const fs = require('fs');
 const util = require('util');
 const exists = util.promisify(fs.exists);
@@ -73,7 +73,7 @@ class MongoWriter extends Io {
     }
 
     async load() {
-        const mongo = new MongoDb();
+        const mongo = new Mongo();
         //Initialize database connection
         await mongo.init();
         this.db = mongo.db;

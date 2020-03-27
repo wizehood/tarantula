@@ -1,4 +1,4 @@
 const Firestore = require('./db/firestore');
-const MongoDb = require('./db/mongo');
+const Mongo = require('./db/mongo');
 
-module.exports = { Firestore, MongoDb }
+module.exports = { Firestore, Mongo }
