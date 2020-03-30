@@ -12,8 +12,8 @@ coverage
 
 # Config files
 utils/db/firestore-setup.json
+.env
 
-# Scraper IOs
+# Scraper IO files
 input.json
 output.json
-.env
