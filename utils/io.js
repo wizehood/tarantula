@@ -39,9 +39,9 @@ class FirestoreWriter extends Io {
         }
 
         if (!this.links.length) {
-            const inputs = inputRef.docs.map(doc => doc.data()).map(doc => doc.url);
+            const inputs = inputRef.docs.map(doc => doc.data().url);
             const outputRef = await this.output.select('url').get();
-            const outputs = outputRef.docs.map(doc => doc.data()).map(doc => doc.url);
+            const outputs = outputRef.docs.map(doc => doc.data().url);
             this.links = _.shuffle(inputs.filter(source => !outputs.some(target => source === target)));
         }
     }
