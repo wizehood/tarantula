@@ -16,3 +16,4 @@ utils/db/firestore-setup.json
 # Scraper IOs
 input.json
 output.json
+.env
