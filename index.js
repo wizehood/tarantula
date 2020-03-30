@@ -7,9 +7,9 @@ const Parser = require('./parser');
 
 const main = async () => {
     try {
-        const io = new MongoWriter();
+        const io = new FirestoreWriter();
         await io.load();
-        
+
         const monitor = new Monitor();
         const parser = new Parser();
         const scraper = new Scraper(parser, io, monitor);

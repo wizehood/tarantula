@@ -87,6 +87,10 @@ class Scraper {
     }
 
     async load() {
+        if (!process.env.SCRAPERAPI_KEY) {
+            throw new Error("SCRAPERAPI_KEY is empty!");
+        }
+
         console.log(`Input array length: ${this.io.links.length}`);
         console.log(`Concurrent request length: ${this.requestCount}`);
 

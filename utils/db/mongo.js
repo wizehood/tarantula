@@ -7,10 +7,10 @@ class Mongo {
 
     async init() {
         if (!process.env.MONGO_URI) {
-            throw new Error("Database connection string is empty!");
+            throw new Error("MONGO_URI is empty!");
         }
         if (!process.env.MONGO_COLLECTION) {
-            throw new Error("Database collection name is empty!");
+            throw new Error("MONGO_COLLECTION is empty!");
         }
 
         const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });

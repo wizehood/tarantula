@@ -3,7 +3,6 @@ const admin = require('firebase-admin');
 class Firestore {
     constructor() {
         this.db = null;
-        this.init();
     }
 
     async init() {
