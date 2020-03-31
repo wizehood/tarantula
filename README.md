@@ -9,6 +9,7 @@ npm install
 
 - Create ```.env``` file inside root with following config and set necessary variables:
 ```
+IO_SERVICE=<firestore,mongo,file>
 MONGO_URI=<your_mongo_connection_string>
 MONGO_COLLECTION=<your_mongo_collection>
 SCRAPERAPI_KEY=<your_scraperapi_api_key>
