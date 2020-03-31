@@ -20,7 +20,7 @@ class Scraper {
             apiKey - api key for ScraperApi service
             requestCount - number of requests fired concurrently
             
-            inputChunks - array of arrays (size of requestCount) containing urls, used for firing multiple requests
+            inputArray - array of arrays (sized of requestCount), each containing urls, used for firing multiple requests
             userAgents - array of available User-Agent headers
             acceptHeaders - array of available Accept headers
             retryFailed - toggle if failed requests (4xx/5xx) should be retried until success
@@ -33,7 +33,7 @@ class Scraper {
         this.apiKey = process.env.SCRAPERAPI_KEY;
         this.requestCount = eval(process.env.REQUEST_COUNT);
 
-        this.inputChunks = [];
+        this.inputArray = [];
         this.userAgents = [];
         this.acceptHeaders = [];
         this.retryFailed = eval(process.env.RETRY_FAILED);
@@ -48,13 +48,13 @@ class Scraper {
         await this.monitor.setStartTime();
         console.log(`Current time: ${this.monitor.currentTimeFormatted}`);
 
-        for (let i = 0; i < this.inputChunks.length; i++, this.monitor.processedCount = this.inputChunks[i].length) {
+        for (let i = 0; i < this.inputArray.length; i++, this.monitor.processedCount = this.inputArray[i].length) {
             await this.monitor.setPassedTime();
             await this.monitor.setAverageRequestTime();
-            await this.monitor.setEtaTime(this.inputChunks.length);
-            await this.monitor.setLeftTime(this.inputChunks.length);
+            await this.monitor.setEtaTime(this.inputArray.length);
+            await this.monitor.setLeftTime(this.inputArray.length);
 
-            console.log(`\nChunks: ${i + 1}/${this.inputChunks.length} (${(((i + 1) / this.inputChunks.length) * 100).toFixed(2)}%, ${this.monitor.processedLinkCount} urls processed) 
+            console.log(`\nChunks: ${i + 1}/${this.inputArray.length} (${(((i + 1) / this.inputArray.length) * 100).toFixed(2)}%, ${this.monitor.processedLinkCount} urls processed) 
             (passed:    ${this.monitor.passedTimeFormatted}) 
             (now:       ${this.monitor.currentTimeFormatted}) 
             (eta:       ${this.monitor.etaDays}days ${this.monitor.etaMilisecondFormatted}) 
@@ -62,7 +62,7 @@ class Scraper {
             (avg/loop:  ${this.monitor.averageLoopTime}ms) 
             (avg/write: ${this.monitor.averageWriteTime}ms)\n`);
 
-            const promises = await this.getPromises(this.inputChunks[i]);
+            const promises = await this.getPromises(this.inputArray[i]);
             const responses = await this.execute(promises);
             let successResponses = responses.filter(response => !!response);
 
@@ -97,7 +97,7 @@ class Scraper {
         console.log("Chunking input array...");
         const tempArr = this.io.links;
         while (tempArr.length) {
-            this.inputChunks.push(tempArr.splice(0, this.requestCount));
+            this.inputArray.push(tempArr.splice(0, this.requestCount));
         }
 
         //Fill array user agents

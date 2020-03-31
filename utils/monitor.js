@@ -1,12 +1,24 @@
 const moment = require('moment');
 
-//TODO: implement checks for falseable constants
 class Monitor {
     /*
-      TODO: extend variable descripitions
+      NOTES:
+      processedLinkCount - count of processed links in current session
       adaptiveDelay - initial value of adaptive delay (alternative is minDelay/maxDelay)
       minDelay - minimum time to defer request 
       maxDelay - maximum time to defer request 
+
+      startTime - session start time
+      passedTime - total time passed from the beginning of current session
+      requestStartTime - request start time
+      writeStartTime - IO-write start time
+      averageRequestTime - average request time
+      averageWriteTime - average IO-write time
+
+      etaMiliseconds - predicted miliseconds till end of current session
+      etaDays - estimated days till end of current session
+      leftMiliseconds - same as estimated time minus the passed time (intentionally left for comparison purpose)
+      leftDays - same as estimated time minus the passed time (intentionally left for comparison purpose)
     */
     constructor() {
         this.processedLinkCount = 0;
@@ -27,8 +39,8 @@ class Monitor {
         this.leftDays = 0;
     }
 
-    set processedCount(chunkSize) {
-        this.processedLinkCount += chunkSize;
+    set processedCount(count) {
+        this.processedLinkCount += count;
     }
 
     async setStartTime() {
@@ -59,9 +71,9 @@ class Monitor {
         return ((this.averageRequestTime / this.processedLinkCount) || 0).toFixed();
     }
 
-    async setEtaTime(chunkCount) {
+    async setEtaTime(inputSize) {
         //Use the pipeline operator since passed/0 === Infinity. Also predict time for 1st loop!
-        this.etaMiliseconds = (((this.averageRequestTime / this.processedLinkCount) | 0) * chunkCount) || (this.maxDelay * chunkCount);
+        this.etaMiliseconds = (((this.averageRequestTime / this.processedLinkCount) | 0) * inputSize) || (this.maxDelay * inputSize);
         this.etaDays = Math.floor(moment.duration(this.etaMiliseconds).asDays()).toFixed();
     }
 
@@ -69,9 +81,9 @@ class Monitor {
         return moment(this.etaMiliseconds).format("HH:mm:ss");
     }
 
-    async setLeftTime(chunkCount) {
+    async setLeftTime(inputSize) {
         //Use the pipeline operator since passed/0 === Infinity. Also predict time for 1st loop!
-        this.leftMiliseconds = (((this.averageRequestTime / this.processedLinkCount) | 0) * Math.abs(chunkCount - this.processedLinkCount));
+        this.leftMiliseconds = (((this.averageRequestTime / this.processedLinkCount) | 0) * Math.abs(inputSize - this.processedLinkCount));
         this.leftDays = Math.floor(moment.duration(this.leftMiliseconds).asDays()).toFixed();
     }
 

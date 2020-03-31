@@ -8,9 +8,6 @@ const _ = require("lodash");
 
 class Io {
     constructor(links = []) {
-        if (!process.env.IO_SERVICE) {
-            throw new Error("IO_SERVICE is empty!");
-        }
         this.links = links;
         this.service = null;
         this.input = null;
@@ -21,6 +18,10 @@ class Io {
 
     async init() {
         //TODO: Figure out dependency injection for IO_SERVICE
+        if (!process.env.IO_SERVICE) {
+            throw new Error("IO_SERVICE is empty!");
+        }
+
         switch (process.env.IO_SERVICE) {
             case "firestore":
                 this.service = new FirestoreWriter();
@@ -153,8 +154,9 @@ class MongoWriter extends Io {
     }
 
     //Append input objects in JSON array format
-    //TODO: consider refactoring this function to check if database input is empty
+    //TODO: solve problem of setting input without calling init() at first place
     async setInput(data) {
+        //TODO: consider refactoring this function to check if database input is empty
         if (!data && data.length === 0) {
             throw new Error("Source is empty!")
         }
@@ -219,9 +221,10 @@ class FileWriter extends Io {
         }
 
         if (!this.links.length) {
-            //TODO: refactor the filtering function here since it takes a lot of processing time when working with large JSONs
-            this.links = _.shuffle(this.input.filter(source => !this.output.some(target => source.url === target.url))
-                .map(source => source.url))
+            //TODO: filter() or map() could be a bottleneck when dealing with large JSONs
+            const inputs = this.input.map(json => json.url);
+            const outputs = this.output.map(json => json.url);
+            this.links = _.shuffle(inputs.filter(source => !outputs.some(target => source === target)));
         }
     }
 

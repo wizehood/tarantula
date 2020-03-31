@@ -15,7 +15,7 @@ class Mongo {
 
         const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
-        
+
         this.db = await client.db(process.env.MONGO_COLLECTION);
         console.log("Connected to Mongo DB!");
     }
