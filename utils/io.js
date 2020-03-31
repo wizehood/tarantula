@@ -197,13 +197,9 @@ class FileWriter extends Io {
         }
 
         if (!this.links.length) {
-            //Check if input is array of objects and filter out accordingly
             //TODO: refactor the filtering function here since it takes a lot of time to process when working with large JSONs
-            //TODO: dont allow array of links, do array of objects instead
-            this.links = typeof this.input[0] == "object" ?
-                _.shuffle(this.input.filter(source => !this.output.some(target => source.url === target.url)).map(source => source.url))
-                :
-                _.shuffle(this.input.filter(source => !this.output.some(target => source === target.url)));
+            this.links = _.shuffle(this.input.filter(source => !this.output.some(target => source.url === target.url))
+                .map(source => source.url))
         }
     }
 

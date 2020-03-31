@@ -32,5 +32,5 @@ The only thing left to users is the bare implementation of ```Parser``` class, u
 Let me know about any suggestion on how to make tarantula better. Cheers =)
 
 ### Todos
-- ~~implement Firestore integration~~
-- resolve various TODOs along the codebase
+* [x] implement Firestore integration
+* [ ] resolve various TODOs along the codebase
