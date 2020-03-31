@@ -1,5 +1,5 @@
 'use strict';
-require('dotenv').config()
+require('dotenv').config();
 const Io = require('./utils/io');
 const Monitor = require('./utils/monitor');
 const Scraper = require('./utils/scraper');

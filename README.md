@@ -35,4 +35,5 @@ Let me know about any suggestion on how to make tarantula better. Cheers =)
 ### Todos
 * [x] implement Firestore integration
 * [ ] implement dependency injection for DB service
+* [ ] implement ESLint
 * [ ] resolve various TODOs along the codebase
