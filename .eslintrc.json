@@ -28,6 +28,16 @@
         "semi": [
             "error",
             "always"
+        ],
+        "no-console": [
+            "warn"
+        ],
+        "no-unused-vars": [
+            "warn"
+        ],
+        "quote-props": [
+            "error",
+            "as-needed"
         ]
     }
 }

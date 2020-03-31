@@ -2,7 +2,6 @@
 
 //A template of provisionary parser
 class Parser {
-
 	constructor() { }
 
 	async processData(response) {
@@ -46,7 +45,7 @@ class Parser {
 						other_websites: websites,
 						other_emails: emails,
 						url: response.headers['sa-final-url'],
-						datetime: new Date().toISOString(),
+						datetime: new Date().toISOString()
 					};
 					infos.push(info);
 				});
