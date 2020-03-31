@@ -28,7 +28,7 @@ class Scraper {
             renderPage - toggle ScraperApi to render pages
         */
         this.parser = parser;
-        this.io = io;
+        this.io = io.service;
         this.monitor = monitor;
         this.apiKey = process.env.SCRAPERAPI_KEY;
         this.requestCount = eval(process.env.REQUEST_COUNT);
@@ -86,7 +86,7 @@ class Scraper {
         console.log(`End time: ${this.monitor.currentTimeFormatted}`);
     }
 
-    async load() {
+    async init() {
         if (!process.env.SCRAPERAPI_KEY) {
             throw new Error("SCRAPERAPI_KEY is empty!");
         }

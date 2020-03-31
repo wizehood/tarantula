@@ -8,11 +8,33 @@ const _ = require("lodash");
 
 class Io {
     constructor(links = []) {
+        if (!process.env.IO_SERVICE) {
+            throw new Error("IO_SERVICE is empty!");
+        }
         this.links = links;
+        this.service = null;
         this.input = null;
         this.output = null;
         this.error = null;
         this.errorFatal = null;
+    }
+
+    async init() {
+        //TODO: Figure out dependency injection for IO_SERVICE
+        switch (process.env.IO_SERVICE) {
+            case "firestore":
+                this.service = new FirestoreWriter();
+                break;
+            case "mongo":
+                this.service = new MongoWriter();
+                break;
+            case "file":
+                this.service = new FileWriter();
+                break;
+            default:
+                throw new Error("IO_SERVICE is invalid!");
+        }
+        await this.service.load();
     }
 }
 
@@ -46,7 +68,7 @@ class FirestoreWriter extends Io {
         }
     }
 
-    //TODO: solve problem of setting input without calling load() at first place
+    //TODO: solve problem of setting input without calling init() at first place
     async setInput(data) {
         //TODO: consider refactoring this function to check if database input is empty
         if (!data && data.length === 0) {
@@ -197,7 +219,7 @@ class FileWriter extends Io {
         }
 
         if (!this.links.length) {
-            //TODO: refactor the filtering function here since it takes a lot of time to process when working with large JSONs
+            //TODO: refactor the filtering function here since it takes a lot of processing time when working with large JSONs
             this.links = _.shuffle(this.input.filter(source => !this.output.some(target => source.url === target.url))
                 .map(source => source.url))
         }
@@ -219,4 +241,4 @@ class FileWriter extends Io {
     }
 }
 
-module.exports = { MongoWriter, FirestoreWriter, FileWriter };
+module.exports = Io;
