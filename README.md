@@ -7,6 +7,17 @@ A Node-based web crawler for data extraction using pool of links.
 npm install
 ```
 
+- Create ```.env``` file inside root with following config and set necessary variables:
+```
+MONGO_URI=<your_mongo_connection_string>
+MONGO_COLLECTION=<your_mongo_collection>
+SCRAPERAPI_KEY=<your_scraperapi_api_key>
+REQUEST_COUNT=1
+RETRY_FAILED=false
+KEEP_HEADERS=false
+RENDER_PAGE=false
+```
+
 - Run crawler
 ```
 npm run start
@@ -14,7 +25,7 @@ npm run start
 
 ### Notes
 The web crawler gets the pool of links as an input array and fires requests over ScraperApi service. 
-Inside configuration file you can set preferred number of requests that run concurrently + other flags. It is possible to utilize Mongo cluster or Google Firestore database as well as native Node file methods. 
+You can utilize Mongo cluster or Google Firestore database as well as native Node file methods. 
 ```Monitor``` class is used to handle different process timings and calculate adaptive delay between requests. 
 The only thing left to users is the bare implementation of ```Parser``` class, used for JSON or HTML parsing. For latter, I recommend using ```cheerio``` npm package.
 
