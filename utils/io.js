@@ -7,9 +7,29 @@ const readFile = util.promisify(fs.readFile);
 const _ = require("lodash");
 
 class Io {
+    constructor() {
+        //TODO: Figure out dependency injection for IO_SERVICE
+        const services = {
+            "firestore": new FirestoreWriter(),
+            "mongo": new MongoWriter(),
+            "file": new FileWriter()
+        }
+        if (!process.env.IO_SERVICE) {
+            throw new Error("IO_SERVICE is empty!");
+        }
+        if (!services[process.env.IO_SERVICE]) {
+            throw new Error("IO_SERVICE is invalid!");
+        }
+        this.service = services[process.env.IO_SERVICE];
+    }
+    
+    init = async () => await this.service.init();
+}
+
+class FirestoreWriter {
     constructor(links = []) {
         this.links = links;
-        this.service = null;
+        this.db = null;
         this.input = null;
         this.output = null;
         this.error = null;
@@ -17,35 +37,6 @@ class Io {
     }
 
     async init() {
-        //TODO: Figure out dependency injection for IO_SERVICE
-        if (!process.env.IO_SERVICE) {
-            throw new Error("IO_SERVICE is empty!");
-        }
-
-        switch (process.env.IO_SERVICE) {
-            case "firestore":
-                this.service = new FirestoreWriter();
-                break;
-            case "mongo":
-                this.service = new MongoWriter();
-                break;
-            case "file":
-                this.service = new FileWriter();
-                break;
-            default:
-                throw new Error("IO_SERVICE is invalid!");
-        }
-        await this.service.load();
-    }
-}
-
-class FirestoreWriter extends Io {
-    constructor() {
-        super();
-        this.db = null;
-    }
-
-    async load() {
         const firestore = new Firestore();
         //Initialize database connection
         await firestore.init();
@@ -125,13 +116,17 @@ class FirestoreWriter extends Io {
     }
 }
 
-class MongoWriter extends Io {
-    constructor() {
-        super();
+class MongoWriter {
+    constructor(links = []) {
+        this.links = links;
         this.db = null;
+        this.input = null;
+        this.output = null;
+        this.error = null;
+        this.errorFatal = null;
     }
 
-    async load() {
+    async init() {
         const mongo = new Mongo();
         //Initialize database connection
         await mongo.init();
@@ -178,11 +173,11 @@ class MongoWriter extends Io {
     }
 }
 
-class FileWriter extends Io {
-    constructor(input = [], output = []) {
-        super();
-        this.input = input;
-        this.output = output;
+class FileWriter {
+    constructor(links = []) {
+        this.links = links;
+        this.input = [];
+        this.output = [];
         this.error = [];
         this.errorFatal = [];
         this.inputPath = "input.json";
@@ -191,34 +186,19 @@ class FileWriter extends Io {
         this.errorFatalPath = "error-fatal.json";
     }
 
-    async load() {
+    async init() {
         //Create and load necessary IO files
-        if (!this.input || !this.input.length) {
-            this.input = JSON.parse(await readFile(this.inputPath, { encoding: 'utf-8' }));
-            if (!this.input.length) {
-                throw new Error("Source file is empty!");
-            }
-        }
-        if (!this.output || !this.output.length) {
-            if (!await exists(this.outputPath)) {
-                await writeFile(this.outputPath, JSON.stringify(this.output));
-            }
-            else {
-                this.output = JSON.parse(await readFile(this.outputPath, { encoding: 'utf-8' }));
-            }
-        }
-        if (!await exists(this.errorPath)) {
-            await writeFile(this.errorPath, JSON.stringify(this.error));
-        }
-        else {
-            this.error = JSON.parse(await readFile(this.errorPath, { encoding: 'utf-8' }));
-        }
-        if (!await exists(this.errorFatalPath)) {
-            await writeFile(this.errorFatalPath, JSON.stringify(this.errorFatal));
-        }
-        else {
-            this.errorFatalPath = JSON.parse(await readFile(this.errorFatalPath, { encoding: 'utf-8' }));
-        }
+        this.input = JSON.parse(await readFile(this.inputPath, { encoding: 'utf-8' }));
+        if (!this.input.length) throw new Error("Source file is empty!");
+
+        if (!await exists(this.outputPath)) await writeFile(this.outputPath, JSON.stringify(this.output));
+        else this.output = JSON.parse(await readFile(this.outputPath, { encoding: 'utf-8' }));
+
+        if (!await exists(this.errorPath)) await writeFile(this.errorPath, JSON.stringify(this.error));
+        else this.error = JSON.parse(await readFile(this.errorPath, { encoding: 'utf-8' }));
+
+        if (!await exists(this.errorFatalPath)) await writeFile(this.errorFatalPath, JSON.stringify(this.errorFatal));
+        else this.errorFatalPath = JSON.parse(await readFile(this.errorFatalPath, { encoding: 'utf-8' }));
 
         if (!this.links.length) {
             //TODO: filter() or map() could be a bottleneck when dealing with large JSONs
