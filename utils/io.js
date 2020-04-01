@@ -10,9 +10,9 @@ class Io {
     constructor() {
         //TODO: Figure out dependency injection for IO_SERVICE
         const services = {
-            "firestore": new FirestoreWriter(),
-            "mongo": new MongoWriter(),
-            "file": new FileWriter()
+            "firestore": () => new FirestoreWriter(),
+            "mongo": () => new MongoWriter(),
+            "file": () => new FileWriter()
         }
         if (!process.env.IO_SERVICE) {
             throw new Error("IO_SERVICE is empty!");
@@ -20,9 +20,9 @@ class Io {
         if (!services[process.env.IO_SERVICE]) {
             throw new Error("IO_SERVICE is invalid!");
         }
-        this.service = services[process.env.IO_SERVICE];
+        this.service = services[process.env.IO_SERVICE]();
     }
-    
+
     init = async () => await this.service.init();
 }
 
